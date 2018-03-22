@@ -149,7 +149,31 @@ Will run the video at 48 FPS. The default FPS is 60.
 
 ### Model Architecture and Training Strategy
 
-Here is a visualization of the architecture: 
+The design of the network is based on the NVIDIA model, which has been used by NVIDIA for the end-to-end self driving test. As such, it is well suited for the project.
+
+I've added the following adjustments to the model.
+
+    I used Lambda layer to normalized input images to avoid saturation and make gradients work better.
+    I've added an additional dropout layer to avoid overfitting after the convolution layers.
+    I've also included RELU for activation function for every layer except for the output layer to introduce non-linearity.
+
+In the end, the model looks like as follows:
+
+    Image normalization
+    Convolution: 5x5, filter: 24, strides: 2x2, activation: RELU
+    Convolution: 5x5, filter: 36, strides: 2x2, activation: RELU
+    Convolution: 5x5, filter: 48, strides: 2x2, activation: RELU
+    Convolution: 3x3, filter: 64, strides: 1x1, activation: RELU
+    Convolution: 3x3, filter: 64, strides: 1x1, activation: RELU
+    Drop out (0.5)
+    Fully connected: neurons: 100, activation: RELU
+    Drop out (0.5)
+    Fully connected: neurons: 50, activation: RELU
+    Fully connected: neurons: 10, activation: RELU
+    Fully connected: neurons: 1 (output)
+
+
+Here is a visualization of the architecture (more detailed): 
 
 ![alt text][image1]
 ![alt text][image10]
@@ -160,7 +184,15 @@ I used Drop out layers and less EPOCH to train.
 
 ### Parameter tuning
 
-The learning rate cannot be tuned manually in Adam Optimizer
+I used the dafault learning rate (0.001) to train in Adam Optimizer
+
+### Image sizing
+
+
+    the images are cropped so that the model won’t be trained with the sky and the car front parts
+    the images are resized to 110x300 (3 RGB channels) for the NVIDIA model
+    the images are normalized (image data divided by 255.0 and subtracted 0.5). 
+
 
 ### Training the model
 
@@ -173,7 +205,6 @@ I have captured some additional data, here is an example image of center lane dr
 
 I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to recover. These images show what a recovery looks like: 
 
-![alt text][image3]
 ![alt text][image4]
 ![alt text][image5]
 
